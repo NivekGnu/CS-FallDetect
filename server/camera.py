@@ -13,7 +13,7 @@ TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 MY_PHONE_NUMBER = os.getenv("MY_PHONE_NUMBER")
 
 class Camera:
-    ALERT_COOLDOWN = 30  # seconds between alerts
+    ALERT_COOLDOWN = 60  # seconds between alerts
     CONFIRMATION_FRAMES = 15  # number of consecutive frames to confirm fall
     LYING_DOWN_THRESHOLD = 0.1  # tune this
 
