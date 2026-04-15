@@ -1,4 +1,11 @@
+# Root directory
+__pycache__/
 .idea
 .venv
-
 venv/
+
+# Client directory
+frontend/node_modules
+frontend/package-lock.json
+
+# Server directory
