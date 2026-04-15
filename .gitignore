@@ -9,3 +9,5 @@ frontend/node_modules
 frontend/package-lock.json
 
 # Server directory
+server/__pycache__/
+server/.env
