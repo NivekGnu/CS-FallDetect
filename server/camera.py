@@ -1,10 +1,13 @@
 import cv2
 import mediapipe as mp
 import time
+import os
+import threading
+
 from collections import deque
 from twilio.rest import Client
+from voice import VoiceAssistant
 from dotenv import load_dotenv
-import os
 
 load_dotenv()  # Load environment variables from .env file
 AUTH_KEY = os.getenv("TWILIO_AUTH_KEY")
@@ -25,14 +28,31 @@ class Camera:
         self.last_alert_time = 0
         self.fall_active = False  # for /status endpoint
         self.client = Client(ACCT_SID, AUTH_KEY)  # replace with actual credentials
+        self.voice_assistant = VoiceAssistant()
 
 
     def send_alert(self):
-        self.client.messages.create(
-            body="Fall detected! Check on the user.",
-            from_=TWILIO_PHONE_NUMBER,
-            to=MY_PHONE_NUMBER
+        threading.Thread(target=self._handle_fall_response, daemon=True).start()
+        
+    def _handle_fall_response(self):
+        response = self.voice_assistant.respond_to_fall()
+        if response == "emergency":
+            self.client.messages.create(
+                body="EMERGENCY SERVICES: Fall detected, user requested emergency help",
+                from_=TWILIO_PHONE_NUMBER, to=MY_PHONE_NUMBER
             )
+        elif response == "family":  # family
+            self.client.messages.create(
+                body="A family member has sent this message requesting help from a fall.",
+                from_=TWILIO_PHONE_NUMBER, to=MY_PHONE_NUMBER
+            )            
+        elif response == "no_response":
+            self.client.messages.create(
+                body="Fall detected, but no response from user.",
+                from_=TWILIO_PHONE_NUMBER, to=MY_PHONE_NUMBER
+            )
+        else:
+            return
 
     def process(self):
         ret, frame = self.capture.read()
