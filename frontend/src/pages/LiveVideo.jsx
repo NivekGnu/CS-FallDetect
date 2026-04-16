@@ -28,3 +28,5 @@ function LiveVideo() {
     </div>
   );
 }
+
+export default LiveVideo;
